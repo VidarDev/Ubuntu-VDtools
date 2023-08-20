@@ -1,0 +1,2 @@
+vdsync/conf/*
+!vdsync/conf/TEMPLATE.conf
