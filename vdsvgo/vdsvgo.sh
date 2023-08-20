@@ -44,7 +44,7 @@ progress='[\033[0;37m...\033[0m]'
 optional='[\033[0;36mOptional\033[0m]'
 
 # environment
-DIR_SCRIPT=$(pwd)
+DIR_SCRIPT=$(dirname $(readlink -f $0 2>/dev/null || perl -MCwd=realpath -e "print realpath '$0'"))
 DIR_HOME=$HOME
 
 # --------------- Functions --------------- #
@@ -86,11 +86,9 @@ stepCounter() {
     fi
 }
 
-# Step Counter
+# Optimize svg files
 #
 #   @param string
-#   @param number
-
 svgOptimizer() {
 
     local svg="$1"
@@ -137,11 +135,11 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
     printf "\nCheck that the required package been installed \n"
 
     # Check that the npm been installed
-    printf "%s/%s. Check that the NVM been installed ? $progress" "$cur_step" "$tot_step"
+    printf "%s/%s. Has the NVM been installed ? $progress" "$cur_step" "$tot_step"
     if [ -d "$DIR_HOME/.nvm/.git" ]; then
-        printf "\r%s/%s. Check that the NVM been installed ? $success" "$cur_step" "$tot_step"
+        printf "\r%s/%s. Has the NVM been installed ? $success" "$cur_step" "$tot_step"
     else
-        printf "\r%s/%s. Check that the NVM been installed ? $error" "$cur_step" "$tot_step" >&2
+        printf "\r%s/%s. Has the NVM been installed ? $error" "$cur_step" "$tot_step" >&2
         printf "\n[$c3 Please install the ${c4}NVM${c3} package $c0] \n"
         exit 1
     fi
@@ -149,11 +147,11 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
     stepCounter
 
     # Check that the npm been installed
-    printf "%s/%s. Check that the npm been installed ? $progress" "$cur_step" "$tot_step"
+    printf "%s/%s. Has the npm been installed ? $progress" "$cur_step" "$tot_step"
     if command -v npm >/dev/null 2>&1; then
-        printf "\r%s/%s. Check that the npm been installed ? $success" "$cur_step" "$tot_step"
+        printf "\r%s/%s. Has the npm been installed ? $success" "$cur_step" "$tot_step"
     else
-        printf "\r%s/%s. Check that the npm been installed ? $error" "$cur_step" "$tot_step" >&2
+        printf "\r%s/%s. Has the npm been installed ? $error" "$cur_step" "$tot_step" >&2
         printf "\n[$c3 Please install the$c4 npm${c3} package $c3:$c1 npm i $c0] \n"
         exit 1
     fi

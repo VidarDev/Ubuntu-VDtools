@@ -1,2 +1,2 @@
-vdsync/conf/*
-!vdsync/conf/TEMPLATE.conf
+conf/*
+!conf/TEMPLATE.conf
