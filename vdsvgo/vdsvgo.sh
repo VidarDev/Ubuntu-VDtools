@@ -77,7 +77,7 @@ stepCounter() {
             tot_step=$stepNumber
         else
 
-            printf "\n[$c3 stepCounter: Argument 1 is not sting 'reset' and/or argument 2 is not a number $c0] \n" >&2
+            printf "\n[$c3 stepCounter: Argument 1 is not string 'reset' and/or argument 2 is not a number $c0] \n" >&2
             exit 1
         fi
     else
@@ -130,7 +130,7 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
 
     argument=$(realpath "$1")
 
-    stepCounter reset 3
+    stepCounter reset 4
 
     printf "\nCheck that the required package been installed \n"
 
@@ -165,7 +165,19 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
     else
         printf "\r%s/%s. Has the SVGO package been installed ? $error" "$cur_step" "$tot_step" >&2
         printf "\n[$c3 Please install the$c4 SVGO${c3} package :$c1 npm -g install svgo $c0] \n"
-        exit
+        exit 1
+    fi
+
+    stepCounter
+
+    # Has the grep package been installed
+    printf "%s/%s. Has the grep package been installed ? $progress" "$cur_step" "$tot_step"
+    if command -v grep >/dev/null 2>&1; then
+        printf "\r%s/%s. Has the grep package been installed ? $success" "$cur_step" "$tot_step"
+    else
+        printf "\r%s/%s. Has the grep package been installed ? $error" "$cur_step" "$tot_step" >&2
+        printf "\n[$c3 Please install the$c4 grep${c3} package :$c1 sudo apt install grep $c0] \n"
+        exit 1
     fi
 
     if [ -d "$argument" ]; then

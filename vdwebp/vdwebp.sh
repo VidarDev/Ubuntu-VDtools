@@ -51,6 +51,9 @@ DIR_CONF=$(dirname $DIR_SCRIPT)
 
 source "$SQL_CONF"
 
+# MYSQL variables
+SQL_CONNECTION="mysql --host=$LOCAL_BD_HOST --user=$LOCAL_BD_USER --password=$LOCAL_BD_PASS $LOCAL_BD_NAME"
+
 # --------------- Functions --------------- #
 # script Informations
 scriptInformations() {
@@ -82,37 +85,12 @@ stepCounter() {
             tot_step=$stepNumber
         else
 
-            printf "\n[$c3 stepCounter: Argument 1 is not sting 'reset' and/or argument 2 is not a number $c0] \n" >&2
+            printf "\n[$c3 stepCounter: Argument 1 is not string 'reset' and/or argument 2 is not a number $c0] \n" >&2
             exit 1
         fi
     else
 
         ((cur_step++))
-    fi
-}
-
-# Step Counter
-#
-#   @param string -e
-#   @param string
-mysqlConnection() {
-
-    local command="$1"
-    local query="$2"
-
-    # Check if $query is not empty
-    if [ -n "$query" ] && [ "$command" = "-e" ]; then
-
-        printf "%s/%s. Run the sql command $progress" "$cur_step" "$tot_step"
-        mysql --host=$DB_HOST --user=$DB_USER --password=$DB_PASS $DB_NAME -e $query
-        if [ $? -eq 0 ]; then
-            printf "\r%s/%s. Run the sql command $success" "$cur_step" "$tot_step"
-        else
-            printf "\r%s/%s. Run the sql command $error" "$cur_step" "$tot_step"
-        fi
-    else
-
-        mysql --host=$DB_HOST --user=$DB_USER --password=$DB_PASS $DB_NAME # For check connection
     fi
 }
 
@@ -158,7 +136,7 @@ if [[ "$@" =~ "--help" ]] || [[ "$@" =~ "-h" ]]; then
     printf "       path/*.svg                  Optimize file \n"
 
     printf "\nOptions: \n"
-    printf "       --sql                       Specify projet name \n"
+    printf "       --sql                       Specify [PROJET NAME], automatically replace images in DB \n"
 
     exit 1
 elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
@@ -167,15 +145,15 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
 
     scriptInformations
 
-    stepCounter reset 2
+    stepCounter reset 3
     printf "\nCheck that the required package been installed \n"
 
     # Has the cwebp package been installed
-    printf "%s/%s. Has the sed cwebp package been installed ? $progress" "$cur_step" "$tot_step"
+    printf "%s/%s. Has the cwebp package been installed ? $progress" "$cur_step" "$tot_step"
     if command -v cwebp >/dev/null 2>&1; then
-        printf "\r%s/%s. Has the sed cwebp package been installed ? $success" "$cur_step" "$tot_step"
+        printf "\r%s/%s. Has the cwebp package been installed ? $success" "$cur_step" "$tot_step"
     else
-        printf "\r%s/%s. Has the sed cwebp package been installed ? $error" "$cur_step" "$tot_step" >&2
+        printf "\r%s/%s. Has the cwebp package been installed ? $error" "$cur_step" "$tot_step" >&2
         printf "\n[$c3 Please install the$c4 cwebp${c3} package $c3:$c1 sudo apt install webp $c0] \n"
         exit 1
     fi
@@ -189,7 +167,19 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
     else
         printf "\r%s/%s. Has the sed package been installed ? $error" "$cur_step" "$tot_step" >&2
         printf "\n[$c3 Please install the$c4 sed${c3} package :$c1 sudo apt install sed $c0] \n"
-        exit
+        exit 1
+    fi
+
+    stepCounter
+
+    # Has the grep package been installed
+    printf "%s/%s. Has the grep package been installed ? $progress" "$cur_step" "$tot_step"
+    if command -v grep >/dev/null 2>&1; then
+        printf "\r%s/%s. Has the grep package been installed ? $success" "$cur_step" "$tot_step"
+    else
+        printf "\r%s/%s. Has the grep package been installed ? $error" "$cur_step" "$tot_step" >&2
+        printf "\n[$c3 Please install the$c4 grep${c3} package :$c1 sudo apt install grep $c0] \n"
+        exit 1
     fi
 
     # Check the script arguments
@@ -218,28 +208,28 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
                     printf "\nCheck projet name and sql local informations \n"
 
                     printf "PROJET_NAME : $c4%s$c0\n" "$PROJET_NAME"
-                    printf "DB_HOST : $c4%s$c0\n" "$DB_HOST"
-                    printf "DB_NAME : $c4%s$c0\n" "$DB_NAME"
-                    printf "DB_USER : $c4%s$c0\n" "$DB_USER"
-                    printf "DB_PASS : $c4%s$c0\n" "$DB_PASS"
-                    printf "DB_PREFIX : $c4%s$c0\n" "$DB_PREFIX"
+                    printf "BD_HOST : $c4%s$c0\n" "$BD_HOST"
+                    printf "BD_NAME : $c4%s$c0\n" "$BD_NAME"
+                    printf "BD_USER : $c4%s$c0\n" "$BD_USER"
 
                     stepCounter reset 1
-                    printf "\nCheck sql connection\n"
+                    printf "\nCheck SQL connection\n"
 
-                    printf "%s/%s. Check sql connection $progress" "$cur_step" "$tot_step"
-                    mysqlConnection >/dev/null 2>&1
+                    printf "%s/%s. Check SQL connection $progress" "$cur_step" "$tot_step"
+                    $($SQL_CONNECTION) >/dev/null 2>&1
                     if [ $? -eq 0 ]; then
-                        printf "\r%s/%s. Check sql connection $success" "$cur_step" "$tot_step"
+                        printf "\r%s/%s. Check SQL connection $success" "$cur_step" "$tot_step"
+
+                        TABLES=$(mysql --host=$BD_HOST --user=$BD_USER --password=$BD_PASS $BD_NAME -e "SHOW TABLES;" | awk 'NR > 1')
                     else
-                        printf "\r%s/%s. Check sql connection $error" "$cur_step" "$tot_step" >&2
-                        #exit 1
+                        printf "\r%s/%s. Check SQL connection $error" "$cur_step" "$tot_step" >&2
+                        exit 1
                     fi
                 else
 
                     printf "\r%s/%s. Check if the %s project configuration exists $error" "$cur_step" "$tot_step" "$sql_value" >&2
                     printf "\n[$c3 Please, create the %s.conf project configuration in :$c1 $DIR_SCRIPT/conf/ $c0] \n" "$sql_value"
-                    exit
+                    exit 1
                 fi
             else
                 printf "\n[$c3 Error  : --sql requires a next value. $c0] \n"
@@ -265,12 +255,11 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
                 webpConverter $file
                 rm $file
 
-                local TABLES=$(mysql --host=$DB_HOST --user=$DB_USER --password=$DB_PASS $DB_NAME -e "SHOW TABLES;" | awk 'NR > 1')
                 for TABLE in $TABLES; do
-                    local QUERY="SELECT $(VALUE), REGEXP_REPLACE($(VALUE),'$file_name','$file_name_without_extension.webp') AS 'REPLACE' FROM $TABLE WHERE $(VALUE) REGEXP '$file_name';"
+                    QUERY="SELECT $(VALUE), REGEXP_REPLACE($(VALUE),'$file_name','$file_name_without_extension.webp') AS 'REPLACE' FROM $TABLE WHERE $(VALUE) REGEXP '$file_name';"
 
                     # Exécuter la requête
-                    mysqlConnection -e "$QUERY"
+                    $($SQL_CONNECTION -e "$QUERY")
                 done
 
             done
@@ -294,12 +283,11 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
             webpConverter $argument
             rm $argument
 
-            local TABLES=$(mysql --host=$DB_HOST --user=$DB_USER --password=$DB_PASS $DB_NAME -e "SHOW TABLES;" | awk 'NR > 1')
             for TABLE in $TABLES; do
-                local QUERY="SELECT $(VALUE), REGEXP_REPLACE($(VALUE),'$file_name','$file_name_without_extension.webp') AS 'REPLACE' FROM $TABLE WHERE $(VALUE) REGEXP '$file_name';"
+                QUERY="SELECT $(VALUE), REGEXP_REPLACE($(VALUE),'$file_name','$file_name_without_extension.webp') AS 'REPLACE' FROM $TABLE WHERE $(VALUE) REGEXP '$file_name';"
 
                 # Exécuter la requête
-                mysqlConnection -e "$QUERY"
+                $($SQL_CONNECTION -e "$QUERY")
             done
         else
             webpConverter $argument
