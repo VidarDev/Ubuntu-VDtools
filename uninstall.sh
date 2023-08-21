@@ -9,7 +9,7 @@
 #
 #                V1.0 - GNU GENERAL PUBLIC LICENSE
 #
-# File name : install.sh
+# File name : uninstall.sh
 # Author : VidarDev
 # Created Date : 16/08/2023
 # Description :
@@ -55,35 +55,35 @@ if [ ! $# -eq 0 ]; then
 fi
 
 stepCounter reset 3
-printf "\nInstalling linux commands \n"
+printf "\nUninstalling linux commands \n"
 
-# Installing vdsvgo command
-printf "%s/%s. Installing vdsvgo command $progress" "$cur_step" "$tot_step"
-sudo ln -s $DIR_SCRIPT/vdsvgo/vdsvgo.sh /usr/bin/vdsvgo >/dev/null 2>&1
+# Uninstalling vdsvgo command
+printf "%s/%s. Uninstalling vdsvgo command $progress" "$cur_step" "$tot_step"
+sudo unlink /usr/bin/vdsvgo >/dev/null 2>&1
 if [ $? -eq 0 ]; then
-    printf "\r%s/%s. Installing vdsvgo command $success" "$cur_step" "$tot_step"
+    printf "\r%s/%s. Uninstalling vdsvgo command $success" "$cur_step" "$tot_step"
 else
-    printf "\r%s/%s. Installing vdsvgo command $error" "$cur_step" "$tot_step" >&2
+    printf "\r%s/%s. Uninstalling vdsvgo command $error" "$cur_step" "$tot_step" >&2
     exit 1
 fi
 
-# Installing vdwebp command
-printf "%s/%s. Installing vdwebp command $progress" "$cur_step" "$tot_step"
-sudo ln -s $DIR_SCRIPT/vdwebp/vdwebp.sh /usr/bin/vdwebp >/dev/null 2>&1
+# Uninstalling vdwebp command
+printf "%s/%s. Uninstalling vdwebp command $progress" "$cur_step" "$tot_step"
+sudo unlink /usr/bin/vdwebp >/dev/null 2>&1
 if [ $? -eq 0 ]; then
-    printf "\r%s/%s. Installing vdwebp command $success" "$cur_step" "$tot_step"
+    printf "\r%s/%s. Uninstalling vdwebp command $success" "$cur_step" "$tot_step"
 else
-    printf "\r%s/%s. Installing vdwebp command $error" "$cur_step" "$tot_step" >&2
+    printf "\r%s/%s. Uninstalling vdwebp command $error" "$cur_step" "$tot_step" >&2
     exit 1
 fi
 
-# Installing vdsync command
-printf "%s/%s. Installing vdsync command $progress" "$cur_step" "$tot_step"
-sudo ln -s $DIR_SCRIPT/vdsync/vdsync.sh /usr/bin/vdsync >/dev/null 2>&1
+# Uninstalling vdsync command
+printf "%s/%s. Uninstalling vdsync command $progress" "$cur_step" "$tot_step"
+sudo unlink /usr/bin/vdsync >/dev/null 2>&1
 if [ $? -eq 0 ]; then
-    printf "\r%s/%s. Installing vdsync command $success" "$cur_step" "$tot_step"
+    printf "\r%s/%s. Uninstalling vdsync command $success" "$cur_step" "$tot_step"
 else
-    printf "\r%s/%s. Installing vdsync command $error" "$cur_step" "$tot_step" >&2
+    printf "\r%s/%s. Uninstalling vdsync command $error" "$cur_step" "$tot_step" >&2
     exit 1
 fi
 
