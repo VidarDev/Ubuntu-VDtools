@@ -135,7 +135,8 @@ elif [[ -n "$1" ]] && [[ -n "$2" ]] && [[ -n "$3" ]] && [[ -z "$4" ]]; then
     printf "\nCheck the server SSH connection \n"
 
     printf "%s/%s. Check the server SSH connection ? $progress" "$cur_step" "$tot_step"
-    if ssh $SERVER_NAME; then
+    ssh -q -o BatchMode=yes -o ConnectTimeout=5 $SERVER_NAME exit
+    if [ $? -eq 0 ]; then
         printf "\r%s/%s. Check the server SSH connection ? $success" "$cur_step" "$tot_step"
     else
         printf "\r%s/%s. Check the server SSH connection ? $error" "$cur_step" "$tot_step" >&2
