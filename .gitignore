@@ -1,2 +1,5 @@
+# PHPStorm
+.idea
+
 conf/*
 !conf/TEMPLATE.conf

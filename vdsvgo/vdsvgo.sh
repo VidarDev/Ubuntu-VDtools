@@ -130,6 +130,8 @@ elif [ -d "$(realpath "$1")" ] || [ -e "$(realpath "$1")" ]; then
 
     argument=$(realpath "$1")
 
+    scriptInformations
+
     stepCounter reset 4
 
     printf "\nCheck that the required package been installed \n"
