@@ -54,7 +54,7 @@ if [ ! $# -eq 0 ]; then
     exit 1
 fi
 
-stepCounter reset 3
+stepCounter reset 2
 printf "\nInstalling linux commands \n"
 
 # Installing vdsvgo command
@@ -74,16 +74,6 @@ if [ $? -eq 0 ]; then
     printf "\r%s/%s. Installing vdwebp command $success" "$cur_step" "$tot_step"
 else
     printf "\r%s/%s. Installing vdwebp command $error" "$cur_step" "$tot_step" >&2
-    exit 1
-fi
-
-# Installing vdsync command
-printf "%s/%s. Installing vdsync command $progress" "$cur_step" "$tot_step"
-sudo ln -s $DIR_SCRIPT/vdsync/vdsync.sh /usr/bin/vdsync >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    printf "\r%s/%s. Installing vdsync command $success" "$cur_step" "$tot_step"
-else
-    printf "\r%s/%s. Installing vdsync command $error" "$cur_step" "$tot_step" >&2
     exit 1
 fi
 

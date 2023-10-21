@@ -54,7 +54,7 @@ if [ ! $# -eq 0 ]; then
     exit 1
 fi
 
-stepCounter reset 3
+stepCounter reset 2
 printf "\nUninstalling linux commands \n"
 
 # Uninstalling vdsvgo command
@@ -74,16 +74,6 @@ if [ $? -eq 0 ]; then
     printf "\r%s/%s. Uninstalling vdwebp command $success" "$cur_step" "$tot_step"
 else
     printf "\r%s/%s. Uninstalling vdwebp command $error" "$cur_step" "$tot_step" >&2
-    exit 1
-fi
-
-# Uninstalling vdsync command
-printf "%s/%s. Uninstalling vdsync command $progress" "$cur_step" "$tot_step"
-sudo unlink /usr/bin/vdsync >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    printf "\r%s/%s. Uninstalling vdsync command $success" "$cur_step" "$tot_step"
-else
-    printf "\r%s/%s. Uninstalling vdsync command $error" "$cur_step" "$tot_step" >&2
     exit 1
 fi
 
